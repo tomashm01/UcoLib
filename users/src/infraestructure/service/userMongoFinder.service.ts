@@ -19,9 +19,9 @@ export class UserMongoFinder implements UserFinder {
       (user) =>
         new UserDTO({
           id: user._id.value,
-          name: user.name.value,
-          email: user.email.value,
-          password: user.password.value,
+          name: user.name,
+          email: user.email,
+          password: user.password,
         }),
     );
   }
@@ -32,9 +32,9 @@ export class UserMongoFinder implements UserFinder {
     }
     return new UserDTO({
       id: user._id.value,
-      name: user.name.value,
-      email: user.email.value,
-      password: user.password.value,
+      name: user.name,
+      email: user.email,
+      password: user.password,
     });
   }
   async findById(id: UserId): Promise<UserDTO> {
@@ -42,11 +42,12 @@ export class UserMongoFinder implements UserFinder {
     if (!user) {
       return null;
     }
-    return new UserDTO({
-      id: user._id.value,
-      name: user.name.value,
-      email: user.email.value,
-      password: user.password.value,
+    const userDto: UserDTO = new UserDTO({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
     });
+    return userDto;
   }
 }

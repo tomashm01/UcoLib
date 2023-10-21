@@ -2,12 +2,20 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Inject,
+  NotFoundException,
+  Param,
+  Patch,
   Post,
+  Get,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiOkResponse } from '@nestjs/swagger';
 
-import { UserAlreadyExistsError } from '../../domain/exception';
+import {
+  UserAlreadyExistsError,
+  UserNotFoundError,
+} from '../../domain/exception';
 import { USER_SERVICE, UserService } from '../service';
 import { UserDTO } from 'src/utils';
 
@@ -26,24 +34,24 @@ export class UserController {
     return null;
     
   }
-    @Get(':id')
+
+  */
+
+  @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por id' })
   @ApiOkResponse({ type: UserDTO })
   async findOne(@Param('id') id: string): Promise<UserDTO | null> {
     try {
-      const user: UserDTO = await this.userService.getUserById(id);
-      if (user) this.logger.info(`User was found`, { id: id });
+      const user: UserDTO = await this.userService.readUser(id);
       return user;
     } catch (e) {
-      if (e instanceof IdNotFoundError) {
+      if (e instanceof UserNotFoundError) {
         throw new NotFoundException('User not found');
       } else {
-        throw catchError(e);
+        throw e;
       }
     }
   }
-
-  */
 
   @Post()
   @ApiOperation({ summary: 'Crear un usuario' })
@@ -61,26 +69,38 @@ export class UserController {
     }
   }
 
-  /*
-  @Delete(':id')
-  @ApiOperation({ summary: 'Eliminar un usuario por id' })
-  @ApiOkResponse({ type: UserId })
-  async delete(@Param('id') id: string): Promise<UserDeleteResponse> {
+  @Patch()
+  @ApiOperation({ summary: 'Actualizar un usuario' })
+  @ApiBody({ type: UserDTO })
+  @ApiOkResponse({ type: UserDTO })
+  async update(@Body() userDto: UserDTO): Promise<UserDTO> {
     try {
-      await this.userService.deleteUser(UserId.with(id));
-      return {
-        id: id,
-        message: 'User deleted'
-      };
+      return await this.userService.updateUser(userDto);
     } catch (e) {
-      if (e instanceof UserNotFoundError) {
-        throw new NotFoundException('User not found');
+      if (e instanceof UserAlreadyExistsError) {
+        throw new ConflictException(e.message);
       } else {
-        throw catchError(e);
+        throw e;
       }
     }
   }
 
+  @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar un usuario por id' })
+  @ApiOkResponse()
+  async delete(@Param('id') id: string): Promise<string> {
+    try {
+      await this.userService.deleteUser(id);
+      return 'User <' + id + '> deleted ';
+    } catch (e) {
+      if (e instanceof UserNotFoundError) {
+        throw new NotFoundException('User not found');
+      } else {
+        throw e;
+      }
+    }
+  }
+  /*
   @Post('login')
   async login(@Body() loginDTO: LoginDTO): Promise<TokenResponse> {
     const { email, password } = loginDTO;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../domain/model/user.repository';
-import { User } from '../../domain/model';
+import { User, UserId } from '../../domain/model';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_PROJECTION, UserDocument } from '../projection';
 import { Model } from 'mongoose';
@@ -21,6 +21,15 @@ export class UserMongoRepository implements UserRepository {
   }
 
   async update(user: User): Promise<void> {
-    await this.model.updateOne({ id: user.id }, user);
+    await this.model.updateOne({
+      _id: user.id.value,
+      email: user.email.value,
+      password: user.password.value,
+      name: user.name.value,
+    });
+  }
+
+  async delete(id: UserId): Promise<void> {
+    await this.model.deleteOne({ _id: id.value });
   }
 }

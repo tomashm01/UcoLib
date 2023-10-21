@@ -1,9 +1,9 @@
 import { Document, Schema } from 'mongoose';
-import { User } from '../../domain/model';
+import { UserDTO } from 'src/utils';
 
 export const USER_PROJECTION = 'users';
 
-export type UserDocument = User & Document;
+export type UserDocument = UserDTO & Document;
 
 export const UserSchema = new Schema(
   {
