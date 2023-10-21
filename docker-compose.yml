@@ -1,0 +1,47 @@
+version: '3'
+services:
+  mongo:
+    image: 'mongo'
+    ports:
+      - '27017:27017'
+    volumes:
+      - type: volume
+        source: mongo-volume-data
+        target: /data/db
+    networks:
+      - network
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - '1080:1080' # Interfaz web
+      - '1025:1025' # Puerto SMTP
+    networks:
+      - network
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - '3001:3001'
+    networks:
+      - network
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - '3100:3100'
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  mongo-volume-data:
+  cache:
+    driver: local
+  node_modules:
+    driver: local
