@@ -1,11 +1,11 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserFinder } from '../../application/service/user-finder.service';
+import { UserFinder } from '../../application/user/service/user-finder.service';
 import { USER_PROJECTION, UserDocument } from '../projection';
 
 import { UserDTO } from 'src/utils';
-import { UserEmail, UserId } from 'src/domain/model';
+import { UserEmail, UserId } from 'src/domain/user/model';
 
 @Injectable()
 export class UserMongoFinder implements UserFinder {
@@ -18,7 +18,7 @@ export class UserMongoFinder implements UserFinder {
     return users.map(
       (user) =>
         new UserDTO({
-          id: user._id.value,
+          id: user._id,
           name: user.name,
           email: user.email,
           password: user.password,
@@ -31,7 +31,7 @@ export class UserMongoFinder implements UserFinder {
       return null;
     }
     return new UserDTO({
-      id: user._id.value,
+      id: user._id,
       name: user.name,
       email: user.email,
       password: user.password,

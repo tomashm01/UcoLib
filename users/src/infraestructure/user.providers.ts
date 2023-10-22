@@ -1,9 +1,19 @@
-import { CREATE_USER, CreateUser, USER_FINDER } from '../application';
-import { READ_USER, ReadUser } from 'src/application/read-user';
-import { UPDATE_USER, UpdateUser } from 'src/application/update-user';
-import { DELETE_USER, DeleteUser } from 'src/application/delete-user';
-import { USER_REPOSITORY } from '../domain/model';
 import {
+  USER_FINDER,
+  CREATE_USER,
+  CreateUser,
+  LOGIN_USER,
+  LoginUser,
+  UPDATE_USER,
+  UpdateUser,
+  DELETE_USER,
+  DeleteUser,
+  READ_USER,
+  ReadUser,
+} from '../application';
+import { USER_REPOSITORY, AUTH_REPOSITORY } from '../domain';
+import {
+  AuthService,
   USER_SERVICE,
   UserMongoFinder,
   UserMongoRepository,
@@ -38,5 +48,13 @@ export const UserProviders = [
   {
     provide: READ_USER,
     useClass: ReadUser,
+  },
+  {
+    provide: AUTH_REPOSITORY,
+    useClass: AuthService,
+  },
+  {
+    provide: LOGIN_USER,
+    useClass: LoginUser,
   },
 ];

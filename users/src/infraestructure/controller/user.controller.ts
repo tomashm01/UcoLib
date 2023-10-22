@@ -15,9 +15,9 @@ import { ApiTags, ApiOperation, ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import {
   UserAlreadyExistsError,
   UserNotFoundError,
-} from '../../domain/exception';
+} from '../../domain/user/exception';
 import { USER_SERVICE, UserService } from '../service';
-import { UserDTO } from 'src/utils';
+import { LoginUserDTO, UserDTO } from 'src/utils';
 
 @ApiTags('UserController')
 @Controller('user')
@@ -46,22 +46,38 @@ export class UserController {
       return user;
     } catch (e) {
       if (e instanceof UserNotFoundError) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException(e.message);
       } else {
         throw e;
       }
     }
   }
 
-  @Post()
+  @Post('/register')
   @ApiOperation({ summary: 'Crear un usuario' })
   @ApiBody({ type: UserDTO })
   @ApiOkResponse({ type: UserDTO })
-  async create(@Body() userDto: UserDTO): Promise<UserDTO> {
+  async create(@Body() userDto: UserDTO): Promise<string> {
     try {
       return await this.userService.createUser(userDto);
     } catch (e) {
       if (e instanceof UserAlreadyExistsError) {
+        throw new ConflictException(e.message);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  @Post('/login')
+  @ApiOperation({ summary: 'Login de un usuario' })
+  @ApiBody({ type: LoginUserDTO })
+  @ApiOkResponse({ type: LoginUserDTO })
+  async login(@Body() userDto: LoginUserDTO): Promise<string> {
+    try {
+      return await this.userService.loginUser(userDto);
+    } catch (e) {
+      if (e instanceof UserNotFoundError) {
         throw new ConflictException(e.message);
       } else {
         throw e;
@@ -94,7 +110,7 @@ export class UserController {
       return 'User <' + id + '> deleted ';
     } catch (e) {
       if (e instanceof UserNotFoundError) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException(e.message);
       } else {
         throw e;
       }

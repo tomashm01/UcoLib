@@ -1,5 +1,5 @@
 import { UserDTO } from 'src/utils';
-import { UserEmail, UserId } from '../../domain/model';
+import { UserEmail, UserId } from '../../../domain/user/model';
 
 export const USER_FINDER = 'USER_FINDER';
 

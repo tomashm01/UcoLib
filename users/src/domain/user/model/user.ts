@@ -1,18 +1,18 @@
 import { UserId } from './user-id';
 import { UserEmail } from './user-email';
-import { UserPassword } from './user-password';
+import { UserEncryptedPassword } from './user-encrypted-password';
 import { UserName } from './user-name';
 
 export class User {
   private _userId: UserId;
   private _email: UserEmail;
-  private _password: UserPassword;
+  private _password: UserEncryptedPassword;
   private _name: UserName;
 
   constructor(
     userId: UserId,
     email: UserEmail,
-    password: UserPassword,
+    password: UserEncryptedPassword,
     username: UserName,
   ) {
     this._userId = userId;
@@ -24,7 +24,7 @@ export class User {
   public static add(
     userId: UserId,
     email: UserEmail,
-    password: UserPassword,
+    password: UserEncryptedPassword,
     username: UserName,
   ): User {
     const user = new User(userId, email, password, username);
@@ -39,7 +39,7 @@ export class User {
     return this._email;
   }
 
-  get password(): UserPassword {
+  get password(): UserEncryptedPassword {
     return this._password;
   }
 

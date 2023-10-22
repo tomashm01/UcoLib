@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserId } from '../domain/model/user-id';
+
+import { UserDTO } from '../../utils/user/UserDTO';
 import { USER_FINDER, UserFinder } from './service/user-finder.service';
 import {
   USER_REPOSITORY,
+  UserId,
+  UserNotFoundError,
   UserRepository,
-} from '../domain/model/user.repository';
-import { UserNotFoundError } from '../domain/exception/user-not-found.error';
-import { UserDTO } from '../utils/user/UserDTO';
+} from 'src/domain';
 
 export const DELETE_USER = 'DELETE_USER';
 @Injectable()

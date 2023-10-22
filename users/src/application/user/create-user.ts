@@ -1,17 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { UserPassword } from '../domain/model/user-password';
-import { UserEmail } from '../domain/model/user-email';
-import { UserId } from '../domain/model/user-id';
-import { USER_FINDER, UserFinder } from './service/user-finder.service';
-import { User } from '../domain/model/user';
-import { UserName } from '../domain/model/user-name';
 import {
+  UserPlainPassword,
+  UserEmail,
   USER_REPOSITORY,
   UserRepository,
-} from '../domain/model/user.repository';
-import { UserAlreadyExistsError } from 'src/domain/exception';
+  User,
+  UserId,
+  UserEncryptedPassword,
+  UserName,
+  UserAlreadyExistsError,
+  AUTH_REPOSITORY,
+  AuthRepository,
+} from '../../domain';
 import { UserDTO } from 'src/utils';
+import { USER_FINDER, UserFinder } from './service/user-finder.service';
 
 export const CREATE_USER = 'CREATE_USER';
 
@@ -20,6 +23,7 @@ export class CreateUser {
   constructor(
     @Inject(USER_FINDER) private readonly userFinder: UserFinder,
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
+    @Inject(AUTH_REPOSITORY) private readonly authRepository: AuthRepository,
   ) {}
 
   async execute(
@@ -30,7 +34,11 @@ export class CreateUser {
   ): Promise<User> {
     const userId: UserId = UserId.with(id);
     const userEmail = UserEmail.with(email);
-    const userPassword = UserPassword.with(password);
+    const userPlainPassword = UserPlainPassword.with(password);
+    const hashedPassword = await this.authRepository.encryptPassword(
+      userPlainPassword.value,
+    );
+    const userEncryptedPassword = UserEncryptedPassword.with(hashedPassword);
     const userName = UserName.with(username);
 
     if ((await this.userFinder.findById(userId)) instanceof UserDTO) {
@@ -41,7 +49,7 @@ export class CreateUser {
       throw UserAlreadyExistsError.withEmail(userEmail);
     }
 
-    const user = User.add(userId, userEmail, userPassword, userName);
+    const user = User.add(userId, userEmail, userEncryptedPassword, userName);
     await this.userRepository.save(user);
     return user;
   }
