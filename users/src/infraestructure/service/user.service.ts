@@ -21,6 +21,7 @@ import {
   UserId,
 } from 'src/domain';
 import { LoginUserDTO } from 'src/utils/user/LoginUserDTO';
+import { LoginUserResponse } from 'src/utils/user/LoginUserResponse';
 
 export const USER_SERVICE = 'USER_SERVICE';
 
@@ -35,14 +36,14 @@ export class UserService {
     @Inject(AUTH_REPOSITORY) private readonly authRepository: AuthRepository,
   ) {}
 
-  async createUser(userdto: UserDTO): Promise<string> {
+  async createUser(userdto: UserDTO): Promise<User> {
     const user: User = await this.createUseCase.execute(
       userdto.id,
       userdto.email,
       userdto.password,
       userdto.name,
     );
-    return await this.authRepository.createToken(user.id, user.email);
+    return user;
   }
 
   async readUser(id: string): Promise<UserDTO> {
@@ -74,14 +75,19 @@ export class UserService {
     await this.deleteUseCase.execute(id);
   }
 
-  async loginUser(userdto: LoginUserDTO): Promise<string> {
+  async loginUser(userdto: LoginUserDTO): Promise<LoginUserResponse> {
     const user: UserDTO = await this.loginUseCase.execute(
       userdto.email,
       userdto.password,
     );
-    return await this.authRepository.createToken(
+    const token = await this.authRepository.createToken(
       UserId.with(user.id),
       UserEmail.with(user.email),
     );
+    return {
+      jwt: token,
+      email: user.email,
+      name: user.name,
+    };
   }
 }

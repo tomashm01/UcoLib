@@ -18,6 +18,7 @@ import {
 } from '../../domain/user/exception';
 import { USER_SERVICE, UserService } from '../service';
 import { LoginUserDTO, UserDTO } from 'src/utils';
+import { LoginUserResponse } from 'src/utils/user/LoginUserResponse';
 
 @ApiTags('UserController')
 @Controller('user')
@@ -57,9 +58,10 @@ export class UserController {
   @ApiOperation({ summary: 'Crear un usuario' })
   @ApiBody({ type: UserDTO })
   @ApiOkResponse({ type: UserDTO })
-  async create(@Body() userDto: UserDTO): Promise<string> {
+  async create(@Body() userDto: UserDTO): Promise<void> {
     try {
-      return await this.userService.createUser(userDto);
+      await this.userService.createUser(userDto);
+      return;
     } catch (e) {
       if (e instanceof UserAlreadyExistsError) {
         throw new ConflictException(e.message);
@@ -73,7 +75,7 @@ export class UserController {
   @ApiOperation({ summary: 'Login de un usuario' })
   @ApiBody({ type: LoginUserDTO })
   @ApiOkResponse({ type: LoginUserDTO })
-  async login(@Body() userDto: LoginUserDTO): Promise<string> {
+  async login(@Body() userDto: LoginUserDTO): Promise<LoginUserResponse> {
     try {
       return await this.userService.loginUser(userDto);
     } catch (e) {
@@ -115,6 +117,13 @@ export class UserController {
         throw e;
       }
     }
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiOkResponse({ type: UserDTO })
+  async findAll(): Promise<UserDTO[] | null> {
+    return;
   }
   /*
   @Post('login')
