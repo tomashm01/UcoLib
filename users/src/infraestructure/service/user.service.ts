@@ -22,6 +22,11 @@ import {
 } from 'src/domain';
 import { LoginUserDTO } from 'src/utils/user/LoginUserDTO';
 import { LoginUserResponse } from 'src/utils/user/LoginUserResponse';
+import {
+  READ_ALL_USERS,
+  ReadAllUsers,
+} from 'src/application/user/read-all-users';
+import { UserProps } from 'src/utils/user/ReadAllResponse';
 
 export const USER_SERVICE = 'USER_SERVICE';
 
@@ -34,6 +39,7 @@ export class UserService {
     @Inject(READ_USER) private readonly readUseCase: ReadUser,
     @Inject(LOGIN_USER) private readonly loginUseCase: LoginUser,
     @Inject(AUTH_REPOSITORY) private readonly authRepository: AuthRepository,
+    @Inject(READ_ALL_USERS) private readonly readAllUseCase: ReadAllUsers,
   ) {}
 
   async createUser(userdto: UserDTO): Promise<User> {
@@ -89,5 +95,16 @@ export class UserService {
       email: user.email,
       name: user.name,
     };
+  }
+
+  async readAllUsers(): Promise<UserProps[]> {
+    const users: User[] = await this.readAllUseCase.execute();
+    return users.map((user) => {
+      return {
+        id: user.id.value,
+        email: user.email.value,
+        name: user.name.value,
+      };
+    });
   }
 }

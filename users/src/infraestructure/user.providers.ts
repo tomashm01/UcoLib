@@ -10,6 +10,8 @@ import {
   DeleteUser,
   READ_USER,
   ReadUser,
+  READ_ALL_USERS,
+  ReadAllUsers,
 } from '../application';
 import { USER_REPOSITORY, AUTH_REPOSITORY } from '../domain';
 import {
@@ -56,5 +58,9 @@ export const UserProviders = [
   {
     provide: LOGIN_USER,
     useClass: LoginUser,
+  },
+  {
+    provide: READ_ALL_USERS,
+    useClass: ReadAllUsers,
   },
 ];
