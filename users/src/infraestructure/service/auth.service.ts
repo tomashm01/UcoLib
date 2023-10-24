@@ -26,8 +26,13 @@ export class AuthService implements AuthRepository {
     return bcrypt.hash(plainPassword, salt);
   }
 
-  verifyToken(token: string): Promise<boolean> {
-    return this.jwtService.verify(token).then(() => true);
+  verifyToken(token: string): boolean {
+    try {
+      const payload = this.jwtService.verify<JwtPayloadInterface>(token);
+      return Boolean(payload?.id && payload?.email);
+    } catch (e) {
+      return false;
+    }
   }
 
   async createToken(userId: UserId, email: UserEmail) {

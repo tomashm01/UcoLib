@@ -7,26 +7,18 @@ export interface UserProps {
 }
 
 interface Props {
-  jwt: string;
   users: UserProps[];
 }
 
 export class ReadAllResponse {
   constructor(props: Props) {
-    this.jwt = props.jwt;
     this.users = props.users;
   }
 
   @ApiProperty({
-    example: 'some_jwt_token',
-    description: 'The JWT token',
-  })
-  jwt: string;
-
-  @ApiProperty({
     example: [
       {
-        id: '1',
+        id: 'a5ce0fa9-1070-40ec-876d-76fea372ba28',
         email: 'john.doe@example.com',
         name: 'John Doe',
       },

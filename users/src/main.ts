@@ -25,6 +25,7 @@ async function bootstrap() {
     .setTitle('User API')
     .setVersion('1.0')
     .addTag('My API tag')
+    .addBearerAuth()
     .build();
 
   app.enableCors({
@@ -38,6 +39,7 @@ async function bootstrap() {
       'Access-Control-Allow-Origin',
       'Access-Control-Allow-Methods',
       'Access-Control-Allow-Headers',
+      'Authorization',
     ],
     exposedHeaders: [
       'Content-Length',

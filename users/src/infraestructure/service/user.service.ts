@@ -86,10 +86,13 @@ export class UserService {
       userdto.email,
       userdto.password,
     );
-    const token = await this.authRepository.createToken(
-      UserId.with(user.id),
-      UserEmail.with(user.email),
-    );
+    const token =
+      'Bearer' +
+      ' ' +
+      (await this.authRepository.createToken(
+        UserId.with(user.id),
+        UserEmail.with(user.email),
+      ));
     return {
       jwt: token,
       email: user.email,

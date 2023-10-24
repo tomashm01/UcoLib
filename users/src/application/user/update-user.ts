@@ -38,28 +38,40 @@ export class UpdateUser {
     username: string,
   ): Promise<User> {
     const userId: UserId = UserId.with(id);
-
     const userEmail = UserEmail.with(email);
-    const userPlainPassword = UserPlainPassword.with(password);
-    const hashedPassword = await this.authRepository.encryptPassword(
-      userPlainPassword.value,
-    );
-    const userEncryptedPassword = UserEncryptedPassword.with(hashedPassword);
     const userName = UserName.with(username);
 
     const userDb = await this.userFinder.findById(userId);
+
     if (!(userDb instanceof UserDTO)) {
       throw UserNotFoundError.withId(userId);
     }
-    const userByEmail = await this.userFinder.findByEmail(userEmail);
 
-    // si el usuario existe con mismo email y distinto id
-    if (userByEmail && userByEmail.id != userDb.id) {
+    const userEncryptedPassword: UserEncryptedPassword =
+      await this.getEncryptedPassword(userDb.password, password);
+
+    const userByEmail = await this.userFinder.findByEmail(userEmail);
+    if (userByEmail && userByEmail.id !== userDb.id) {
       throw UserAlreadyExistsError.withEmail(userEmail);
     }
 
     const user = new User(userId, userEmail, userEncryptedPassword, userName);
     await this.userRepository.update(user);
     return user;
+  }
+
+  private async getEncryptedPassword(
+    passwordDb: string,
+    password: string,
+  ): Promise<UserEncryptedPassword> {
+    if (passwordDb === password) {
+      return UserEncryptedPassword.with(password);
+    }
+
+    const userPlainPassword = UserPlainPassword.with(password);
+    const hashedPassword = await this.authRepository.encryptPassword(
+      userPlainPassword.value,
+    );
+    return UserEncryptedPassword.with(hashedPassword);
   }
 }

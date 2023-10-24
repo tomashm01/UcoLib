@@ -1,5 +1,4 @@
 import {
-  Headers,
   Body,
   ConflictException,
   Controller,
@@ -11,6 +10,7 @@ import {
   Post,
   Get,
   UnauthorizedException,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -44,8 +44,14 @@ export class UserController {
   @ApiBearerAuth()
   async findOne(
     @Param('id') id: string,
-    @Headers('authorization') jwt: string,
+    @Req() request: any,
   ): Promise<UserDTO | null> {
+    const jwt = this.extractJWTFromRequest(request);
+
+    if (!this.authService.verifyToken(jwt)) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
     const isTokenValid = await this.authService.verifyToken(jwt);
     if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
@@ -67,12 +73,10 @@ export class UserController {
   @ApiBody({ type: UserDTO })
   @ApiOkResponse({ type: UserDTO })
   @ApiBearerAuth()
-  async create(
-    @Body() userDto: UserDTO,
-    @Headers('authorization') jwt: string,
-  ): Promise<void> {
-    const isTokenValid = await this.authService.verifyToken(jwt);
-    if (!isTokenValid) {
+  async create(@Body() userDto: UserDTO, @Req() request: any): Promise<void> {
+    const jwt = this.extractJWTFromRequest(request);
+
+    if (!this.authService.verifyToken(jwt)) {
       throw new UnauthorizedException('Invalid token');
     }
     try {
@@ -110,10 +114,11 @@ export class UserController {
   @ApiBearerAuth()
   async update(
     @Body() userDto: UserDTO,
-    @Headers('authorization') jwt: string,
+    @Req() request: any,
   ): Promise<UserDTO> {
-    const isTokenValid = await this.authService.verifyToken(jwt);
-    if (!isTokenValid) {
+    const jwt = this.extractJWTFromRequest(request);
+
+    if (!this.authService.verifyToken(jwt)) {
       throw new UnauthorizedException('Invalid token');
     }
     try {
@@ -131,12 +136,10 @@ export class UserController {
   @ApiOperation({ summary: 'Eliminar un usuario por id' })
   @ApiOkResponse()
   @ApiBearerAuth()
-  async delete(
-    @Param('id') id: string,
-    @Headers('authorization') jwt: string,
-  ): Promise<string> {
-    const isTokenValid = await this.authService.verifyToken(jwt);
-    if (!isTokenValid) {
+  async delete(@Param('id') id: string, @Req() request: any): Promise<string> {
+    const jwt = this.extractJWTFromRequest(request);
+
+    if (!this.authService.verifyToken(jwt)) {
       throw new UnauthorizedException('Invalid token');
     }
     try {
@@ -155,17 +158,21 @@ export class UserController {
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiOkResponse({ type: UserDTO })
   @ApiBearerAuth()
-  async findAll(
-    @Headers('authorization') jwt: string,
-  ): Promise<ReadAllResponse> {
-    const isTokenValid = await this.authService.verifyToken(jwt);
-    if (!isTokenValid) {
+  async findAll(@Req() request: any): Promise<ReadAllResponse> {
+    const jwt = this.extractJWTFromRequest(request);
+
+    if (!this.authService.verifyToken(jwt)) {
       throw new UnauthorizedException('Invalid token');
     }
     const users: UserProps[] = await this.userService.readAllUsers();
-    return {
-      jwt,
-      users,
-    };
+    return new ReadAllResponse({ users });
+  }
+
+  private extractJWTFromRequest(request: any): string {
+    const jwt = request.headers.authorization;
+    if (jwt?.includes('Bearer')) {
+      return jwt.split(' ')[1];
+    }
+    throw new UnauthorizedException('JWT must be provided');
   }
 }
