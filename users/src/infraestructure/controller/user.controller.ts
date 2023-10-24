@@ -91,15 +91,7 @@ export class UserController {
   @ApiOperation({ summary: 'Login de un usuario' })
   @ApiBody({ type: LoginUserDTO })
   @ApiOkResponse({ type: LoginUserDTO })
-  @ApiBearerAuth()
-  async login(
-    @Body() userDto: LoginUserDTO,
-    @Headers('authorization') jwt: string,
-  ): Promise<LoginUserResponse> {
-    const isTokenValid = await this.authService.verifyToken(jwt);
-    if (!isTokenValid) {
-      throw new UnauthorizedException('Invalid token');
-    }
+  async login(@Body() userDto: LoginUserDTO): Promise<LoginUserResponse> {
     try {
       return await this.userService.loginUser(userDto);
     } catch (e) {
