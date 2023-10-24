@@ -26,3 +26,5 @@ import { FileInterceptor } from '@nestjs/platform-express';
     console.log('no jwt');
     return null;
   }
+
+//EN EL GET ME TENEIS QUE DEVOLVER LA URL DE LA IMAGEN VOSOTROS SEREIS EL HOST, NO TENEIS QUE ENVIARME LA IMAGEN.
