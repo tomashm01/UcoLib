@@ -28,7 +28,7 @@ import { BookNotFoundError } from '../../../src/domain';
 export class BookController {
   constructor(
     @Inject(BOOK_SERVICE) private readonly bookService: BookService,
-    @Inject(AUTH_SERVICE)private readonly authService: AuthService,
+    @Inject(AUTH_SERVICE) private readonly authService: AuthService,
   ) {}
 
   @Get(':id')
@@ -37,22 +37,17 @@ export class BookController {
   @ApiBearerAuth()
   async findOne(
     @Param('id') id: string,
-    //@Req() request: any,
+    @Req() request: any,
   ): Promise<BookDTO | null> {
-    /*const jwt = this.extractJWTFromRequest(request);
+    const jwt = this.extractJWTFromRequest(request);
 
-    if (!this.authService.verifyToken(jwt)) {
-      throw new UnauthorizedException('Invalid token');
-    }
-
-    const isTokenValid = await this.authService.verifyToken(jwt);
+    const isTokenValid= await this.authService.verifyToken(jwt);
     if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
-    */
+    
     try {
       const book: BookDTO = await this.bookService.readBook(id);
-      console.log(book)
       return book;
     } catch (e) {
       if (e instanceof BookNotFoundError) {
@@ -70,14 +65,14 @@ export class BookController {
   @ApiBearerAuth()
   async create(
     @Body() BookDTO: BookDTO,
-    //@Req() request: any,
+    @Req() request: any,
   ): Promise<BookDTO> {
-    /*const jwt = this.extractJWTFromRequest(request);
+    const jwt = this.extractJWTFromRequest(request);
 
-    if (!this.authService.verifyToken(jwt)) {
+    const isTokenValid= await this.authService.verifyToken(jwt);
+    if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
-    */
     return await this.bookService.createBook(BookDTO);
   }
 
@@ -88,14 +83,14 @@ export class BookController {
   @ApiBearerAuth()
   async update(
     @Body() BookDTO: BookDTO,
-    //@Req() request: any,
+    @Req() request: any,
   ): Promise<BookDTO> {
-    /*const jwt = this.extractJWTFromRequest(request);
+    const jwt = this.extractJWTFromRequest(request);
 
-    if (!this.authService.verifyToken(jwt)) {
+    const isTokenValid= await this.authService.verifyToken(jwt);
+    if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
-    */
     try {
       return await this.bookService.updateBook(BookDTO);
     } catch (e) {
@@ -112,14 +107,14 @@ export class BookController {
   @ApiOkResponse()
   @ApiBearerAuth()
   async delete(
-    @Param('id') id: string /*@Req() request: any*/,
+    @Param('id') id: string, @Req() request: any,
   ): Promise<string> {
-    /*const jwt = this.extractJWTFromRequest(request);
+    const jwt = this.extractJWTFromRequest(request);
 
-    if (!this.authService.verifyToken(jwt)) {
+    const isTokenValid= await this.authService.verifyToken(jwt);
+    if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
-    */
     try {
       await this.bookService.deleteBook(id);
       return 'Book <' + id + '> deleted ';
@@ -136,14 +131,13 @@ export class BookController {
   @ApiOperation({ summary: 'Obtener todos los libros' })
   @ApiOkResponse({ type: BookDTO })
   @ApiBearerAuth()
-  async findAll(/*@Req() request: any*/): Promise<BookDTO[]> {
-    /*const jwt = this.extractJWTFromRequest(request);
+  async findAll(@Req() request: any): Promise<BookDTO[]> {
+    const jwt = this.extractJWTFromRequest(request);
 
-    if (!this.authService.verifyToken(jwt)) {
+    const isTokenValid= await this.authService.verifyToken(jwt);
+    if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
-    */
-    this.authService.verifyToken();
     return await this.bookService.readAllBooks();
   }
 

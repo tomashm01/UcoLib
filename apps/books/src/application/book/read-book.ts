@@ -22,7 +22,6 @@ export class ReadBook {
   async execute(id: string): Promise<Book> {
     const bookId: BookId = BookId.with(id);
     const bookDto: BookDTO = await this.bookFinder.findById(bookId);
-    console.log(bookDto)
     if (!bookDto) throw BookNotFoundError.withId(bookId);
 
     return new Book(

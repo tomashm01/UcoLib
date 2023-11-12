@@ -29,7 +29,7 @@ import { LoginUserDTO, UserDTO } from '../../../src/utils';
 import { LoginUserResponse } from '../../../src/utils/user/LoginUserResponse';
 import { ReadAllResponse, UserProps } from '../../../src/utils/user/ReadAllResponse';
 import { AUTH_REPOSITORY } from '../../../src/domain';
-import { MessagePattern } from '@nestjs/microservices/decorators';
+import { MessagePattern } from '@nestjs/microservices';
 
 @ApiTags('UserController')
 @Controller('user')
@@ -73,16 +73,16 @@ export class UserController {
   @ApiOperation({ summary: 'Crear un usuario' })
   @ApiBody({ type: UserDTO })
   @ApiOkResponse({ type: UserDTO })
-  //@ApiBearerAuth()
+  @ApiBearerAuth()
   async create(
-    @Body() userDto: UserDTO /*@Req() request: any*/,
+    @Body() userDto: UserDTO, @Req() request: any,
   ): Promise<void> {
-    /*const jwt = this.extractJWTFromRequest(request);
+    const jwt = this.extractJWTFromRequest(request);
 
     if (!this.authService.verifyToken(jwt)) {
       throw new UnauthorizedException('Invalid token');
     }
-    */
+    
     try {
       await this.userService.createUser(userDto);
       return;
@@ -158,7 +158,6 @@ export class UserController {
     }
   }
 
-  /*
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiOkResponse({ type: UserDTO })
@@ -172,15 +171,12 @@ export class UserController {
     const users: UserProps[] = await this.userService.readAllUsers();
     return new ReadAllResponse({ users });
   }
-  */
 
-  @Get()
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @MessagePattern("user-token-topic")
-  async findAll(): Promise<string> {
-    return "Hola";
+  verifyToken(token:string):boolean{
+    return this.authService.verifyToken(token);
   }
-
+  
   private extractJWTFromRequest(request: any): string {
     const jwt = request.headers.authorization;
     if (jwt?.includes('Bearer')) {
