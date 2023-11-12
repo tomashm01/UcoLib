@@ -58,5 +58,4 @@ export const BookProviders = [
     provide: AUTH_SERVICE,
     useClass: AuthService,
   },
-  
 ];

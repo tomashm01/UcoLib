@@ -5,6 +5,8 @@ import { AppLoggerMiddleware } from './app.middleware';
 import { BookModule } from './infraestructure/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger/dist';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import * as path from 'path';
 
 @Module({
   imports: [BookModule],
@@ -32,32 +34,33 @@ async function bootstrap() {
       },
     },
   );
-  const appHttp = await NestFactory.create(BookModule);
+  const appHttp = await NestFactory.create<NestExpressApplication>(BookModule);
+  appHttp.useStaticAssets(path.join(__dirname, './img'));
   const globalPrefix = 'api';
   appHttp.setGlobalPrefix(globalPrefix);
   appHttp.enableShutdownHooks();
-  
+
   // Configuración para Swagger
   const config = new DocumentBuilder()
-  .setTitle('Book API')
-  .setVersion('1.0')
-  .addTag('Books')
-  .addBearerAuth()
-  .build();
+    .setTitle('Book API')
+    .setVersion('1.0')
+    .addTag('Books')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(appHttp, config);
   SwaggerModule.setup(`${globalPrefix}/docs`, appHttp, document);
-  
+
   appHttp.enableCors(); // Configura según las necesidades de tu aplicación
-  
+
   // Inicia el servidor HTTP para la API
   const httpPort = process.env.PORT_BOOK || 3000;
   await appHttp.listen(httpPort);
   Logger.log(
     `🚀 Book HTTP API is running on: http://localhost:${httpPort}/${globalPrefix}`,
-    );
-    Logger.log(
-      `📖 Swagger documentation for Book API is available on: http://localhost:${httpPort}/${globalPrefix}/docs`,
-      );
+  );
+  Logger.log(
+    `📖 Swagger documentation for Book API is available on: http://localhost:${httpPort}/${globalPrefix}/docs`,
+  );
   await appTcp.listen();
 }
 

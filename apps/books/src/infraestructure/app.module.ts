@@ -41,7 +41,7 @@ import { Transport } from '@nestjs/microservices/enums';
         transport: Transport.KAFKA,
         options: {
           client: {
-            clientId: "user",
+            clientId: 'user',
             brokers: ['host.docker.internal:9092'],
           },
           consumer: {

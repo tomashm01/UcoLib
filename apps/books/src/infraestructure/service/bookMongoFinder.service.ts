@@ -14,7 +14,9 @@ export class BookMongoFinder implements BookFinder {
   ) {}
 
   async findByIsbn(isbn: BookBarCode): Promise<BookDTO> {
-    const book = (await this.model.findOne({ barCode: isbn.value }).exec()).toObject();
+    const book = (
+      await this.model.findOne({ barCode: isbn.value }).exec()
+    ).toObject();
     if (!book) {
       return null;
     }
@@ -26,8 +28,8 @@ export class BookMongoFinder implements BookFinder {
 
   async findAll(): Promise<BookDTO[]> {
     const books = await this.model.find().exec();
-  
-    return books.map(book => {
+
+    return books.map((book) => {
       const bookObject = book.toObject();
       return new BookDTO({
         id: book._id,
@@ -35,9 +37,11 @@ export class BookMongoFinder implements BookFinder {
       });
     });
   }
-  
+
   async findByAuthor(author: BookAuthor): Promise<BookDTO> {
-    const book = (await this.model.findOne({ author: author.value }).exec()).toObject();
+    const book = (
+      await this.model.findOne({ author: author.value }).exec()
+    ).toObject();
     if (!book) {
       return null;
     }
