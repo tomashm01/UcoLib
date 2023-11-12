@@ -1,8 +1,41 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/ucolib/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/ucolib/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/ucolib",
+  "projects": {
+    "ucolib": {
+      "type": "application",
+      "root": "apps/ucolib",
+      "entryFile": "main",
+      "sourceRoot": "apps/ucolib/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ucolib/tsconfig.app.json"
+      }
+    },
+    "users": {
+      "type": "application",
+      "root": "apps/users",
+      "entryFile": "main",
+      "sourceRoot": "apps/users/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users/tsconfig.app.json"
+      }
+    },
+    "books": {
+      "type": "application",
+      "root": "apps/books",
+      "entryFile": "main",
+      "sourceRoot": "apps/books/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/books/tsconfig.app.json"
+      }
+    }
   }
 }
