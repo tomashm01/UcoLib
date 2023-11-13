@@ -35,7 +35,7 @@ async function bootstrap() {
     },
   );
   const appHttp = await NestFactory.create<NestExpressApplication>(BookModule);
-  appHttp.useStaticAssets(path.join(__dirname, './img'));
+  appHttp.useStaticAssets(path.join('uploads'));
   const globalPrefix = 'api';
   appHttp.setGlobalPrefix(globalPrefix);
   appHttp.enableShutdownHooks();

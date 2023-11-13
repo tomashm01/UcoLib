@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 import configuration from '../conf/configuration';
 import { BookProviders } from '../../src/infraestructure/book.providers';
@@ -23,6 +25,10 @@ import { Transport } from '@nestjs/microservices/enums';
       ],
       isGlobal: true,
       load: [configuration],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.join('uploads'), 
+      serveRoot: '/uploads',
     }),
     MongooseModule.forRoot(configuration().database.uri, {}),
     MongooseModule.forFeature([{ name: BOOK_PROJECTION, schema: BookSchema }]),

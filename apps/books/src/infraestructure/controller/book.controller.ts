@@ -12,7 +12,7 @@ import {
   UnauthorizedException,
   Req,
   UploadedFile,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,6 +28,7 @@ import { BookNotFoundError } from '../../../src/domain';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
+
 
 @ApiTags('BookController')
 @Controller('book')
@@ -186,9 +187,8 @@ export class BookController {
     if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
-    console.log(file)
+
     return {
-      response:"success",
       filename: file.filename
     };
   }
