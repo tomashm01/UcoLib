@@ -49,7 +49,7 @@ export class BookService {
 
   async readBook(id: string): Promise<BookDTO> {
     const book: Book = await this.readUseCase.execute(id);
-    
+
     return new BookDTO({
       id: book.bookId.value,
       barCode: book.barCode.value,

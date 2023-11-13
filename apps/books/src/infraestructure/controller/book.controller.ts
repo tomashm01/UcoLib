@@ -11,6 +11,8 @@ import {
   Get,
   UnauthorizedException,
   Req,
+  UploadedFile,
+  UseInterceptors
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,10 +20,15 @@ import {
   ApiBody,
   ApiOkResponse,
   ApiBearerAuth,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { AUTH_SERVICE, AuthService, BOOK_SERVICE, BookService } from '../service';
 import { BookDTO } from '../../../src/utils';
 import { BookNotFoundError } from '../../../src/domain';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+
 
 @ApiTags('BookController')
 @Controller('book')
@@ -63,9 +70,11 @@ export class BookController {
   @ApiBody({ type: BookDTO })
   @ApiOkResponse({ type: BookDTO })
   @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @Body() BookDTO: BookDTO,
     @Req() request: any,
+    @UploadedFile() file: Express.Multer.File
   ): Promise<BookDTO> {
     const jwt = this.extractJWTFromRequest(request);
 
@@ -148,4 +157,40 @@ export class BookController {
     }
     throw new UnauthorizedException('JWT must be provided');
   }
+
+  @Post("/upload")
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: path.join('uploads'), 
+      filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`); 
+      },
+    }),
+  }))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() request: any ) {
+    const jwt = this.extractJWTFromRequest(request);
+
+    const isTokenValid= await this.authService.verifyToken(jwt);
+    if (!isTokenValid) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    return {
+      filename: file.filename
+    };
+  }
+
 }

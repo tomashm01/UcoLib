@@ -39,28 +39,28 @@ async function bootstrap() {
   const globalPrefix = 'api';
   appHttp.setGlobalPrefix(globalPrefix);
   appHttp.enableShutdownHooks();
-  
+
   // Configuración para Swagger
   const config = new DocumentBuilder()
-  .setTitle('User API')
-  .setVersion('1.0')
-  .addTag('Users')
-  .addBearerAuth()
-  .build();
+    .setTitle('User API')
+    .setVersion('1.0')
+    .addTag('Users')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(appHttp, config);
   SwaggerModule.setup(`${globalPrefix}/docs`, appHttp, document);
-  
+
   appHttp.enableCors(); // Configura según las necesidades de tu aplicación
-  
+
   // Inicia el servidor HTTP para la API
   const httpPort = process.env.PORT_USER || 3002;
   await appHttp.listen(httpPort);
   Logger.log(
     `🚀 User HTTP API is running on: http://localhost:${httpPort}/${globalPrefix}`,
-    );
-    Logger.log(
-      `📖 Swagger documentation for User API is available on: http://localhost:${httpPort}/${globalPrefix}/docs`,
-      );
+  );
+  Logger.log(
+    `📖 Swagger documentation for User API is available on: http://localhost:${httpPort}/${globalPrefix}/docs`,
+  );
   await appTcp.listen();
 }
 

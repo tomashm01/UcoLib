@@ -27,7 +27,10 @@ import {
 import { AuthService, USER_SERVICE, UserService } from '../service';
 import { LoginUserDTO, UserDTO } from '../../../src/utils';
 import { LoginUserResponse } from '../../../src/utils/user/LoginUserResponse';
-import { ReadAllResponse, UserProps } from '../../../src/utils/user/ReadAllResponse';
+import {
+  ReadAllResponse,
+  UserProps,
+} from '../../../src/utils/user/ReadAllResponse';
 import { AUTH_REPOSITORY } from '../../../src/domain';
 import { MessagePattern } from '@nestjs/microservices';
 
@@ -74,15 +77,13 @@ export class UserController {
   @ApiBody({ type: UserDTO })
   @ApiOkResponse({ type: UserDTO })
   @ApiBearerAuth()
-  async create(
-    @Body() userDto: UserDTO, @Req() request: any,
-  ): Promise<void> {
+  async create(@Body() userDto: UserDTO, @Req() request: any): Promise<void> {
     const jwt = this.extractJWTFromRequest(request);
 
     if (!this.authService.verifyToken(jwt)) {
       throw new UnauthorizedException('Invalid token');
     }
-    
+
     try {
       await this.userService.createUser(userDto);
       return;
@@ -172,11 +173,11 @@ export class UserController {
     return new ReadAllResponse({ users });
   }
 
-  @MessagePattern("user-token-topic")
-  verifyToken(token:string):boolean{
+  @MessagePattern('user-token-topic')
+  verifyToken(token: string): boolean {
     return this.authService.verifyToken(token);
   }
-  
+
   private extractJWTFromRequest(request: any): string {
     const jwt = request.headers.authorization;
     if (jwt?.includes('Bearer')) {
