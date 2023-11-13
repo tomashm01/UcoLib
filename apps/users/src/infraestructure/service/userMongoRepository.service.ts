@@ -31,4 +31,8 @@ export class UserMongoRepository implements UserRepository {
   async delete(id: UserId): Promise<void> {
     await this.model.deleteOne({ _id: id.value });
   }
+
+  async deleteALl(): Promise<void> {
+    await this.model.deleteMany({});
+  }
 }
