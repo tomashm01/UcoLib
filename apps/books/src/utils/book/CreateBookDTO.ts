@@ -6,18 +6,16 @@ interface Props {
   title: string;
   author: string;
   genre: string;
-  stock: number;
   image: string;
 }
 
-export class BookDTO {
+export class CreateBookDTO {
   constructor(props: Props) {
     this.id = props.id;
     this.barCode = props.barCode;
     this.title = props.title;
     this.author = props.author;
     this.genre = props.genre;
-    this.stock = props.stock;
     this.image = props.image;
   }
 
@@ -52,15 +50,9 @@ export class BookDTO {
   genre: string;
 
   @ApiProperty({
-    example: 1,
-    description: 'Stock of the book',
-  })
-  stock: number;
-
-  @ApiProperty({
-    example: 'No hay example xD',
-    format: 'binary',
-    description: 'Image of the book',
+    example: 'imagename.jpg',
+    format: 'string',
+    description: 'return from /upload endpoint',
   })
   image: string;
 }

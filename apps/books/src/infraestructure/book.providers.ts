@@ -19,7 +19,10 @@ import {
   ReadBook,
   UPDATE_BOOK,
   UpdateBook,
+  DELETE_STOCK,
+  DeleteStock,
 } from '../../src/application';
+import { READ_BOOK_BARCODE, ReadBookByBarcode } from '../application/book/read-book-byBarcode';
 
 export const BookProviders = [
   {
@@ -57,5 +60,13 @@ export const BookProviders = [
   {
     provide: AUTH_SERVICE,
     useClass: AuthService,
+  },
+  {
+    provide: READ_BOOK_BARCODE,
+    useClass: ReadBookByBarcode,
+  },
+  {
+    provide: DELETE_STOCK,
+    useClass: DeleteStock,
   },
 ];

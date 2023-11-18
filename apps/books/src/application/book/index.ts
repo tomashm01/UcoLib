@@ -4,3 +4,5 @@ export * from './read-all-books';
 export * from './read-book';
 export * from './update-book';
 export * from './delete-book';
+export * from './read-book-byBarcode';
+export * from './delete-stock';

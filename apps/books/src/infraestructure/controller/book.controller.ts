@@ -28,6 +28,7 @@ import { BookNotFoundError } from '../../../src/domain';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
+import { CreateBookDTO } from '../../utils/book/CreateBookDTO';
 
 
 @ApiTags('BookController')
@@ -38,12 +39,12 @@ export class BookController {
     @Inject(AUTH_SERVICE) private readonly authService: AuthService,
   ) {}
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Obtener un libro por id' })
+  @Get(':barcode')
+  @ApiOperation({ summary: 'Obtener un libro por barcode' })
   @ApiOkResponse({ type: BookDTO })
   @ApiBearerAuth()
   async findOne(
-    @Param('id') id: string,
+    @Param('barcode') barcode: string,
     @Req() request: any,
   ): Promise<BookDTO | null> {
     const jwt = this.extractJWTFromRequest(request);
@@ -54,7 +55,7 @@ export class BookController {
     }
     
     try {
-      const book: BookDTO = await this.bookService.readBook(id);
+      const book: BookDTO = await this.bookService.readBookByBarcode(barcode);
       return book;
     } catch (e) {
       if (e instanceof BookNotFoundError) {
@@ -67,12 +68,12 @@ export class BookController {
 
   @Post('/create')
   @ApiOperation({ summary: 'Crear un libro' })
-  @ApiBody({ type: BookDTO })
+  @ApiBody({ type: CreateBookDTO })
   @ApiOkResponse({ type: BookDTO })
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
   async create(
-    @Body() BookDTO: BookDTO,
+    @Body() BookDTO: CreateBookDTO,
     @Req() request: any,
     @UploadedFile() file: Express.Multer.File
   ): Promise<BookDTO> {
@@ -85,14 +86,14 @@ export class BookController {
     return await this.bookService.createBook(BookDTO);
   }
 
-  @Patch()
-  @ApiOperation({ summary: 'Actualizar un libro' })
-  @ApiBody({ type: BookDTO })
-  @ApiOkResponse({ type: BookDTO })
+
+
+  @Patch('/stock/:barcode')
+  @ApiOperation({ summary: 'libro +1 stock' })
+  @ApiOkResponse()
   @ApiBearerAuth()
   async update(
-    @Body() BookDTO: BookDTO,
-    @Req() request: any,
+    @Param('barcode') barcode: string, @Req() request: any,
   ): Promise<BookDTO> {
     const jwt = this.extractJWTFromRequest(request);
 
@@ -101,7 +102,7 @@ export class BookController {
       throw new UnauthorizedException('Invalid token');
     }
     try {
-      return await this.bookService.updateBook(BookDTO);
+      return await this.bookService.updateBook(barcode);
     } catch (e) {
       if (e instanceof BookNotFoundError) {
         throw new ConflictException(e.message);
@@ -110,6 +111,32 @@ export class BookController {
       }
     }
   }
+  @Delete('/stock/:barcode')
+  @ApiOperation({ summary: 'Eliminar un libro por barcode' })
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  async deleteStock(
+    @Param('barcode') barcode: string, @Req() request: any,
+  ): Promise<string> {
+    const jwt = this.extractJWTFromRequest(request);
+
+    const isTokenValid= await this.authService.verifyToken(jwt);
+    if (!isTokenValid) {
+      throw new UnauthorizedException('Invalid token');
+    }
+    try {
+      await this.bookService.deleteStock(barcode);
+      return 'Book <' + barcode + '> stock  ';
+    } catch (e) {
+      if (e instanceof BookNotFoundError) {
+        throw new NotFoundException(e.message);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar un libro por id' })

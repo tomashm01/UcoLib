@@ -46,7 +46,7 @@ export class BookDTO {
   author: string;
 
   @ApiProperty({
-    example: 'Technology',
+    example: 'Action',
     description: 'Genre of the book',
   })
   genre: string;
@@ -58,9 +58,9 @@ export class BookDTO {
   stock: number;
 
   @ApiProperty({
-    example: 'No hay example xD',
-    format: 'binary',
-    description: 'Image of the book',
+    example: 'imagename.jpg',
+    format: 'string',
+    description: 'return from /upload endpoint',
   })
   image: string;
 }

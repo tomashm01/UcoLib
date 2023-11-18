@@ -8,54 +8,45 @@ import {
   BookGenre,
   BookId,
   BookImage,
+  BookNotFoundError,
   BookRepository,
   BookStock,
   BookTitle,
 } from '../../../src/domain';
 import { BookDTO } from '../../../src/utils';
 
-export const CREATE_BOOK = 'CREATE_BOOK';
+export const DELETE_STOCK = 'DELETE_STOCK';
 
 @Injectable()
-export class CreateBook {
+export class DeleteStock {
   constructor(
     @Inject(BOOK_FINDER) private readonly bookFinder: BookFinder,
     @Inject(BOOK_REPOSITORY) private readonly bookRepository: BookRepository,
   ) {}
 
   async execute(
-    id: string,
     barCode: string,
-    title: string,
-    author: string,
-    genre: string,
-    image: string,
   ): Promise<Book> {
-    const bookId: BookId = BookId.with(id);
     const bookBarCode: BookBarCode = BookBarCode.with(barCode);
-    const bookTitle: BookTitle = BookTitle.with(title);
-    const bookAuthor: BookAuthor = BookAuthor.with(author);
-    const bookGenre: BookGenre = BookGenre.with(genre);
-    const bookImage: BookImage = BookImage.with(image);
 
     const bookDb = await this.bookFinder.findByIsbn(bookBarCode);
-    if(bookDb instanceof BookDTO) {
-      throw new Error('Book already exists');
+    if (!(bookDb instanceof BookDTO)) {
+      throw BookNotFoundError.withBarCode(bookBarCode);
     }
-    const bookStock: BookStock = BookStock.with(1)
+
+    bookDb.stock = bookDb.stock - 1;
 
     const book = Book.add(
-      bookId,
-      bookBarCode,
-      bookTitle,
-      bookAuthor,
-      bookGenre,
-      bookStock,
-      bookImage,
+      BookId.with(bookDb.id),
+      BookBarCode.with(bookDb.barCode),
+      BookTitle.with(bookDb.title),
+      BookAuthor.with(bookDb.author),
+      BookGenre.with(bookDb.genre),
+      BookStock.with(bookDb.stock),
+      BookImage.with(bookDb.image),
     );
 
-    await this.bookRepository.save(book);
-
+    await this.bookRepository.update(book);
     return book;
   }
 }

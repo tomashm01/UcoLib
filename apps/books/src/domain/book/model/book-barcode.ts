@@ -6,7 +6,6 @@ interface Props {
 
 export class BookBarCode extends ValueObject<Props> {
   public static readonly maxLength: number = 14;
-  public static readonly barCodeRegex: RegExp = /^\d{3}-\d{10}$/;
 
   public static with(barCode: string): BookBarCode {
     if (barCode.length === 0) {
@@ -18,9 +17,7 @@ export class BookBarCode extends ValueObject<Props> {
         `BarCode cannot be longer than ${BookBarCode.maxLength} characters`,
       );
     }
-    if (!BookBarCode.barCodeRegex.test(barCode)) {
-      throw new Error('BarCode must be a valid barCode address');
-    }
+
     return new BookBarCode({ value: barCode });
   }
 
