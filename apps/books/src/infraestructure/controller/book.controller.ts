@@ -188,10 +188,7 @@ export class BookController {
   @Post("/upload")
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: path.join('uploads'), 
-      filename: (req, file, cb) => {
-        cb(null, `${file.originalname}`); 
-      },
+      destination: path.join('uploads')
     }),
   }))
   @ApiBearerAuth()
