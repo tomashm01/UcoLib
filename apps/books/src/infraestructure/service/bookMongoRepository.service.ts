@@ -37,4 +37,8 @@ export class BookMongoRepository implements BookRepository {
   async delete(id: BookId): Promise<void> {
     await this.model.deleteOne({ _id: id.value });
   }
+
+  async deleteAll(): Promise<void> {
+    await this.model.deleteMany({});
+  }
 }
