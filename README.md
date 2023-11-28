@@ -1,5 +1,5 @@
 # UcoLib
-![Logo de UcoLib](https://ruta/al/logo/de/ucolib.png)
+<img src="./uploads/portada.jpeg" alt="Logo de UCOLib" width="100px">
 
 UcoLib es una aplicación desarrollada con NestJS, diseñada para facilitar la creación y gestión de servicios del lado del servidor. Este proyecto aprovecha las capacidades de NestJS para ofrecer una solución robusta y escalable, ideal para aplicaciones empresariales y servicios web.
 
