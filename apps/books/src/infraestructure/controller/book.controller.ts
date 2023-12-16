@@ -168,9 +168,9 @@ export class BookController {
   @ApiOkResponse({ type: BookDTO })
   @ApiBearerAuth()
   async findAll(@Req() request: any): Promise<BookDTO[]> {
-    const jwt = this.extractJWTFromRequest(request);
-
-    const isTokenValid= await this.authService.verifyToken(jwt);
+const jwt = this.extractJWTFromRequest(request);
+    
+const isTokenValid= await this.authService.verifyToken(jwt);
     if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');
     }
@@ -188,7 +188,10 @@ export class BookController {
   @Post("/upload")
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: path.join('uploads'),
+      destination: path.join('uploads'), 
+      filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`); 
+      },
     }),
   }))
   @ApiBearerAuth()
@@ -205,8 +208,8 @@ export class BookController {
     },
   })
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() request: any ) {
-    const jwt = this.extractJWTFromRequest(request);
-
+const jwt = this.extractJWTFromRequest(request);
+    
     const isTokenValid= await this.authService.verifyToken(jwt);
     if (!isTokenValid) {
       throw new UnauthorizedException('Invalid token');

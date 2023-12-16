@@ -44,3 +44,5 @@ Thumbs.db
 /users/node_modules/*
 /users/dist/*
 
+#images
+/uploads
